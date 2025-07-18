@@ -3,11 +3,17 @@ package coco.project.demo.controller;
 import coco.project.demo.DTO.LoginDTO;
 import coco.project.demo.DTO.RegisterDTO;
 import coco.project.demo.DTO.UserDTO;
+import coco.project.demo.JWT.JwtResponse;
+import coco.project.demo.JWT.TokenInfo;
 import coco.project.demo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,11 +36,22 @@ public class UserController {
         }
     }
 
+    private final AuthenticationManager authenticationManager;
+    private final TokenInfo tokenInfo;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO) {
+        System.out.println(loginDTO.getEmail() + " : " + loginDTO.getPassword());
         try {
-            UserDTO userDTO = userService.loginUser(loginDTO);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("로그인에 성공했습니다. " + userDTO.getUsername() + " : " + userDTO.getEmail());
+             UserDTO userDTO = userService.loginUser(loginDTO);
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(userDTO.getUsername(), loginDTO.getPassword())
+            );
+            // 인증 성공 시 SecurityContext에 Authentication 객체를 저장함 //
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            // jwt 토큰
+            String jwt = tokenInfo.generateJwtToken(userDTO.getUsername());
+            return ResponseEntity.ok(new JwtResponse(jwt, auth.getName()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
