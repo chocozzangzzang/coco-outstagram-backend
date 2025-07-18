@@ -41,7 +41,6 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO) {
-        System.out.println(loginDTO.getEmail() + " : " + loginDTO.getPassword());
         try {
              UserDTO userDTO = userService.loginUser(loginDTO);
             Authentication auth = authenticationManager.authenticate(
