@@ -1,0 +1,46 @@
+package coco.project.demo.service;
+
+import coco.project.demo.DTO.PostDTO;
+import coco.project.demo.DTO.PostImageDTO;
+import coco.project.demo.models.Post;
+import coco.project.demo.models.PostImage;
+import coco.project.demo.repository.PostImageRespository;
+import coco.project.demo.repository.PostRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class PostServiceImpl implements PostService{
+
+    private final PostRepository postRepository;
+    private final PostImageRespository postImageRespository;
+
+    @Override
+    @Transactional
+    public Post createFeed(PostDTO postDTO) {
+        Post post = Post.builder()
+                .content(postDTO.getContent())
+                .writer(postDTO.getWriter())
+                .createdAt(postDTO.getCreatedAt())
+                .build();
+
+        return postRepository.save(post);
+    }
+
+    @Override
+    @Transactional
+    public PostImage imageUploader(PostImageDTO postImageDTO) {
+        PostImage postImage = PostImage.builder()
+                .postId(postImageDTO.getPostId())
+                .imageIndex(postImageDTO.getImageIdx())
+                .imageUrl(postImageDTO.getImageUrl())
+                .fileName(postImageDTO.getFileName())
+                .build();
+
+        return postImageRespository.save(postImage);
+    }
+}
