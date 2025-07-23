@@ -22,6 +22,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/user/register").permitAll()
                         .requestMatchers("/api/user/login").permitAll()
+                        .requestMatchers("/api/user/profile").permitAll()
+                        .requestMatchers("/api/user/profileImage").permitAll()
                         .requestMatchers("/api/post/*").permitAll()
                         .anyRequest().authenticated()
                 );

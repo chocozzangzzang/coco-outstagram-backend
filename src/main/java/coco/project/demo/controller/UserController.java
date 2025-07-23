@@ -1,8 +1,6 @@
 package coco.project.demo.controller;
 
-import coco.project.demo.DTO.LoginDTO;
-import coco.project.demo.DTO.RegisterDTO;
-import coco.project.demo.DTO.UserDTO;
+import coco.project.demo.DTO.*;
 import coco.project.demo.JWT.JwtResponse;
 import coco.project.demo.JWT.TokenInfo;
 import coco.project.demo.service.UserService;
@@ -23,6 +21,31 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+
+    @PostMapping("/profile")
+    public ResponseEntity<?> getProfile(@Valid @RequestBody ProfileDTO profileDTO) {
+        try {
+            UserDTO userDTO = userService.getProfileWithUsername(profileDTO.getUsername());
+            return ResponseEntity.ok(userDTO);
+        }   catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원가입 오류 " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/profileImage")
+    public ResponseEntity<?> profileImageUpdater(@Valid @RequestBody ProfileImageDTO profileImageDTO) {
+        System.out.println(profileImageDTO.getUsername() + "---" + profileImageDTO.getFilename() + "--" + profileImageDTO.getFileurl());
+        try {
+            userService.profileImageUpdate(profileImageDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body("프로필이미지를 업데이트했습니다. " + profileImageDTO.getUsername());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 업로드 오류 " + e.getMessage());
+        }
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDTO) {

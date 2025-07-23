@@ -18,6 +18,7 @@ public class UserDTO {
     public String username;
     public String email;
     public UserRole role;
+    public String profilePictureName;
     public String profilePictureUrl;
     public LocalDateTime createdAt;
 

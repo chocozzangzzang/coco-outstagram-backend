@@ -25,6 +25,8 @@ public class User {
     @Column(nullable = false, unique = true, length = 100)
     public String email;
     @Column(length = 255)
+    public String profilePictureName;
+    @Column(length = 255)
     public String profilePictureUrl;
     @Column(nullable = false)
     public UserRole role;

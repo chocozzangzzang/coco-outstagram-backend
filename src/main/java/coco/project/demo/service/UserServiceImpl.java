@@ -1,6 +1,7 @@
 package coco.project.demo.service;
 
 import coco.project.demo.DTO.LoginDTO;
+import coco.project.demo.DTO.ProfileImageDTO;
 import coco.project.demo.DTO.RegisterDTO;
 import coco.project.demo.DTO.UserDTO;
 import coco.project.demo.models.User;
@@ -58,8 +59,42 @@ public class UserServiceImpl implements UserService{
             throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
 
-        UserDTO userDTO = User.userEntityToDTO(findUser.get());
+        return User.userEntityToDTO(findUser.get());
+    }
 
-        return userDTO;
+    @Override
+    public UserDTO getProfileWithUsername(String username) {
+        if(!userRepository.existsByUsername(username)) {
+            throw new IllegalArgumentException("존재하지 않는 아이디입니다.");
+        }
+
+        Optional<User> findUser = userRepository.findByUsername(username);
+
+        if(findUser.isEmpty()) throw new IllegalArgumentException("사용자가 존재하지 않습니다.");
+
+        return User.userEntityToDTO(findUser.get());
+    }
+
+    @Override
+    public User profileImageUpdate(ProfileImageDTO profileImageDTO) {
+        if(!userRepository.existsByUsername(profileImageDTO.getUsername())) {
+            throw new IllegalArgumentException("존재하지 않는 아이디입니다.");
+        }
+
+        User findUser = userRepository.findByUsername(profileImageDTO.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+
+        User updatedUser = User.builder()
+                .id(findUser.getId())
+                .username(profileImageDTO.getUsername())
+                .password(findUser.getPassword())
+                .email(findUser.getEmail())
+                .profilePictureName(profileImageDTO.getFilename())
+                .profilePictureUrl(profileImageDTO.getFileurl())
+                .role(findUser.getRole())
+                .createdAt(findUser.getCreatedAt())
+                .build();
+
+        return userRepository.save(updatedUser);
     }
 }

@@ -2,6 +2,7 @@ package coco.project.demo.controller;
 
 import coco.project.demo.DTO.PostDTO;
 import coco.project.demo.DTO.PostImageDTO;
+import coco.project.demo.DTO.ProfileImageDTO;
 import coco.project.demo.models.Post;
 import coco.project.demo.models.PostImage;
 import coco.project.demo.service.PostService;
