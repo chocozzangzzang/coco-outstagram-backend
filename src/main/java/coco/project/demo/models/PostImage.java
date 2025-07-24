@@ -1,5 +1,6 @@
 package coco.project.demo.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,18 +14,23 @@ public class PostImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
     @Column(nullable = false)
-    public Long postId;
+    private Long imageIndex;
 
     @Column(nullable = false)
-    public Long imageIndex;
+    private String imageUrl;
 
     @Column(nullable = false)
-    public String imageUrl;
+    private String fileName;
 
-    @Column(nullable = false)
-    public String fileName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    @JsonBackReference
+    private Post post;
 
+    public void confirmPost(Post post) {
+        this.post = post;
+    }
 }

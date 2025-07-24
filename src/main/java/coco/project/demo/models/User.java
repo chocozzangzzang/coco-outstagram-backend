@@ -37,6 +37,7 @@ public class User {
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
+                .profilePictureName(user.getProfilePictureName())
                 .profilePictureUrl(user.getProfilePictureUrl())
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())

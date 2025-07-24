@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,25 +23,42 @@ public class PostServiceImpl implements PostService{
     @Override
     @Transactional
     public Post createFeed(PostDTO postDTO) {
+        System.out.println(postDTO);
         Post post = Post.builder()
                 .content(postDTO.getContent())
                 .writer(postDTO.getWriter())
                 .createdAt(postDTO.getCreatedAt())
                 .build();
 
-        return postRepository.save(post);
+        postRepository.save(post);
+
+        for(PostImageDTO postImageDTO : postDTO.getPostImages()) {
+            PostImage postImage = PostImage.builder()
+                    .imageIndex(postImageDTO.getImageIdx())
+                    .imageUrl(postImageDTO.getImageUrl())
+                    .fileName(postImageDTO.getFileName())
+                    .build();
+
+            post.addImage(postImage);
+        }
+
+        return post;
     }
 
     @Override
     @Transactional
     public PostImage imageUploader(PostImageDTO postImageDTO) {
         PostImage postImage = PostImage.builder()
-                .postId(postImageDTO.getPostId())
                 .imageIndex(postImageDTO.getImageIdx())
                 .imageUrl(postImageDTO.getImageUrl())
                 .fileName(postImageDTO.getFileName())
                 .build();
 
         return postImageRespository.save(postImage);
+    }
+
+    @Override
+    public List<Post> getAllPosts() {
+        return postRepository.findAllWithImages();
     }
 }
