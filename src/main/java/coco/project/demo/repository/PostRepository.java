@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    @Query("SELECT DISTINCT p FROM Post p JOIN FETCH p.postImages")
+    @Query("SELECT DISTINCT p FROM Post p")
     List<Post> findAllWithImages();
 }

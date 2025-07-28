@@ -1,15 +1,15 @@
 package coco.project.demo.DTO;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @Setter
 @Data
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class PostImageDTO {
+    public Long id;
     public Long imageIdx;
     public String imageUrl;
     public String fileName;

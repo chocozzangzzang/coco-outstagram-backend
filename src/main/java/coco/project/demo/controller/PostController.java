@@ -25,7 +25,8 @@ public class PostController {
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllPosts() {
-        return ResponseEntity.ok(postService.getAllPosts());
+        List<PostDTO> postDTOList = postService.getAllPosts();
+        return ResponseEntity.ok(postDTOList);
     }
 
     @PostMapping("/create")

@@ -9,11 +9,15 @@ import java.util.List;
 @Data
 @Getter
 @Setter
-@Builder
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class PostDTO {
+    public Long id;
     public String content;
     public String writer;
     public List<PostImageDTO> postImages;
+    public List<LikesDTO> likes;
+    public List<CommentDTO> comments;
     public LocalDateTime createdAt;
 }

@@ -11,5 +11,5 @@ public interface PostService {
     public Post createFeed(PostDTO postDTO);
 
     public PostImage imageUploader(PostImageDTO postImageDTO);
-    public List<Post> getAllPosts();
+    public List<PostDTO> getAllPosts();
 }

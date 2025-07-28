@@ -1,17 +1,16 @@
 package coco.project.demo.DTO;
 
 import coco.project.demo.models.UserRole;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Getter
 @Setter
 @Builder
+@ToString
 public class UserDTO {
 
     public Long id;
@@ -20,6 +19,8 @@ public class UserDTO {
     public UserRole role;
     public String profilePictureName;
     public String profilePictureUrl;
+    public List<LikesDTO> likes;
+    public List<CommentDTO> comments;
     public LocalDateTime createdAt;
 
 }

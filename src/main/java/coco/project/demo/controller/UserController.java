@@ -15,6 +15,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
@@ -73,7 +76,12 @@ public class UserController {
             SecurityContextHolder.getContext().setAuthentication(auth);
             // jwt 토큰
             String jwt = tokenInfo.generateJwtToken(userDTO.getUsername());
-            return ResponseEntity.ok(new JwtResponse(jwt, auth.getName()));
+
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("jwt", new JwtResponse(jwt, auth.getName()));
+            responseBody.put("id", userDTO.getId());
+            return ResponseEntity.ok(responseBody);
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
