@@ -1,15 +1,11 @@
 package coco.project.demo.service;
 
-import coco.project.demo.DTO.CommentDTO;
-import coco.project.demo.DTO.LikesDTO;
-import coco.project.demo.DTO.PostDTO;
-import coco.project.demo.DTO.PostImageDTO;
-import coco.project.demo.models.Comment;
-import coco.project.demo.models.Likes;
-import coco.project.demo.models.Post;
-import coco.project.demo.models.PostImage;
+import coco.project.demo.DTO.*;
+import coco.project.demo.models.*;
+import coco.project.demo.repository.LikesRepository;
 import coco.project.demo.repository.PostImageRespository;
 import coco.project.demo.repository.PostRepository;
+import coco.project.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +19,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService{
 
+    private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final LikesRepository likesRepository;
     private final PostImageRespository postImageRespository;
 
     @Override
@@ -101,5 +99,32 @@ public class PostServiceImpl implements PostService{
             ));
         }
         return postDTOs;
+    }
+
+    @Override
+    public Likes addLike(LikeBodyDTO likeBodyDTO) {
+
+        Post post = postRepository.findById(likeBodyDTO.getPostId())
+                .orElseThrow(() -> new IllegalArgumentException("Cannot Find The Post With PostId : " + likeBodyDTO.getPostId()));
+        User user = userRepository.findById(likeBodyDTO.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("Cannot Find The User With UserId : " + likeBodyDTO.getUserId()));
+
+        Likes likes = Likes.builder()
+                .post(post)
+                .user(user)
+                .build();
+
+        return likesRepository.save(likes);
+    }
+
+    @Override
+    public void deleteLike(LikeBodyDTO likeBodyDTO) {
+
+        Post post = postRepository.findById(likeBodyDTO.getPostId())
+                .orElseThrow(() -> new IllegalArgumentException("Cannot Find The Post With PostId : " + likeBodyDTO.getPostId()));
+        User user = userRepository.findById(likeBodyDTO.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("Cannot Find The User With UserId : " + likeBodyDTO.getUserId()));
+
+        likesRepository.deleteById(likeBodyDTO.getId());
     }
 }

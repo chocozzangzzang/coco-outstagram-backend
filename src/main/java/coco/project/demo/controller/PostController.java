@@ -1,7 +1,9 @@
 package coco.project.demo.controller;
 
+import coco.project.demo.DTO.LikeBodyDTO;
 import coco.project.demo.DTO.PostDTO;
 import coco.project.demo.DTO.PostImageDTO;
+import coco.project.demo.models.Likes;
 import coco.project.demo.models.Post;
 import coco.project.demo.service.PostService;
 import jakarta.validation.Valid;
@@ -40,6 +42,30 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 업로드 오류 " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/like")
+    public ResponseEntity<?> postLike(@Valid @RequestBody LikeBodyDTO likeBodyDTO) {
+        try {
+            Likes likes = postService.addLike(likeBodyDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(likes);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("내부 서버 오류 " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/dislike")
+    public ResponseEntity<?> postDislike(@Valid @RequestBody LikeBodyDTO likeBodyDTO) {
+        try {
+            postService.deleteLike(likeBodyDTO);
+            return ResponseEntity.status(HttpStatus.OK).body("좋아요가 해제됨");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("내부 서버 오류 " + e.getMessage());
         }
     }
 
