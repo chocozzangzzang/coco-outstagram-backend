@@ -3,6 +3,7 @@ package coco.project.demo.controller;
 import coco.project.demo.DTO.*;
 import coco.project.demo.JWT.JwtResponse;
 import coco.project.demo.JWT.TokenInfo;
+import coco.project.demo.service.FollowService;
 import coco.project.demo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -24,13 +26,38 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final FollowService followService;
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            List<UserDTO> allUsers = userService.getAllUsers();
+            return ResponseEntity.ok(allUsers);
+        }  catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원이 없습니다. " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/follows")
+    public ResponseEntity<?> getFollowList() {
+        try {
+            List<FollowDTO> follows = followService.getAllFollows();
+            return ResponseEntity.ok(follows);
+        }   catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("목록을 받을 수 없음! " + e.getMessage());
+        }
+    }
 
     @PostMapping("/profile")
     public ResponseEntity<?> getProfile(@Valid @RequestBody ProfileDTO profileDTO) {
         try {
             UserDTO userDTO = userService.getProfileWithUsername(profileDTO.getUsername());
             return ResponseEntity.ok(userDTO);
-        }   catch (IllegalArgumentException e) {
+        }  catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원가입 오류 " + e.getMessage());

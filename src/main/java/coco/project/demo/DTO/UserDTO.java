@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 @Builder
 @ToString
+@AllArgsConstructor
 public class UserDTO {
 
     public Long id;

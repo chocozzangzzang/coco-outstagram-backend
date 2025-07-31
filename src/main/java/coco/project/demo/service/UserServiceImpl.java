@@ -1,9 +1,6 @@
 package coco.project.demo.service;
 
-import coco.project.demo.DTO.LoginDTO;
-import coco.project.demo.DTO.ProfileImageDTO;
-import coco.project.demo.DTO.RegisterDTO;
-import coco.project.demo.DTO.UserDTO;
+import coco.project.demo.DTO.*;
 import coco.project.demo.models.User;
 import coco.project.demo.models.UserRole;
 import coco.project.demo.repository.UserRepository;
@@ -12,7 +9,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -96,5 +95,34 @@ public class UserServiceImpl implements UserService{
                 .build();
 
         return userRepository.save(updatedUser);
+    }
+
+    @Override
+    public List<UserDTO> getAllUsers() {
+        List<User> userList = userRepository.findAll();
+
+        List<UserDTO> userDTOs = userList.stream().map(
+                user -> {
+                    List<LikesDTO> likesDTOs = user.getLikes().stream()
+                            .map(likes -> {
+                                return new LikesDTO(likes.getId(), likes.getPost().getId(), likes.getUser().getId());
+                            }).collect(Collectors.toList());
+
+                    List<CommentDTO> commentDTOs = user.getComments().stream()
+                            .map(comment -> {
+                                return new CommentDTO(comment.getId(), comment.getPost().getId(), comment.getUser().getId(), comment.getContent());
+                            }).collect(Collectors.toList());
+
+                    return new UserDTO(
+                            user.getId(), user.getUsername(),
+                            user.getEmail(), user.getRole(),
+                            user.getProfilePictureName(), user.getProfilePictureUrl(),
+                            likesDTOs, commentDTOs,
+                            user.getCreatedAt()
+                            );
+                }
+        ).collect(Collectors.toList());
+
+        return userDTOs;
     }
 }
