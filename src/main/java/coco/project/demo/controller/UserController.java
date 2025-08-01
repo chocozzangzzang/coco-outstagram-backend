@@ -3,6 +3,7 @@ package coco.project.demo.controller;
 import coco.project.demo.DTO.*;
 import coco.project.demo.JWT.JwtResponse;
 import coco.project.demo.JWT.TokenInfo;
+import coco.project.demo.models.Follow;
 import coco.project.demo.service.FollowService;
 import coco.project.demo.service.UserService;
 import jakarta.validation.Valid;
@@ -27,6 +28,35 @@ public class UserController {
 
     private final UserService userService;
     private final FollowService followService;
+
+    @PostMapping("/following")
+    public ResponseEntity<?> follow(@Valid @RequestBody FollowDTO followDTO) {
+        try {
+            Follow follow = followService.followUser(followDTO);
+            FollowDTO follow_dto = FollowDTO.builder()
+                    .id(follow.getId())
+                    .followingId(follow.getFollowing().getId())
+                    .followerId(follow.getFollower().getId())
+                    .build();
+            return ResponseEntity.status(HttpStatus.CREATED).body(follow_dto);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("팔로우를 실패했습니다. " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/unfollow")
+    public ResponseEntity<?> unfollow(@Valid @RequestBody FollowDTO followDTO) {
+        try {
+            followService.unFollowUser(followDTO);
+            return ResponseEntity.status(HttpStatus.OK).body("팔로우를 해제하였습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("팔로우를 해제하지 못했습니다. " + e.getMessage());
+        }
+    }
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllUsers() {
