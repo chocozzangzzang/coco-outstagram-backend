@@ -61,7 +61,7 @@ public class User {
         for(Comment comment : user.getComments()) {
             CommentDTO tmpComment = new CommentDTO();
             tmpComment.setId(comment.getId());
-            tmpComment.setUserId(comment.getUser().getId());
+            tmpComment.setUsername(comment.getUser().getUsername());
             tmpComment.setPostId(comment.getPost().getId());
             commentList.add(tmpComment);
         }

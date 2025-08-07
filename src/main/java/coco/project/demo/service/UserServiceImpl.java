@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService{
 
                     List<CommentDTO> commentDTOs = user.getComments().stream()
                             .map(comment -> {
-                                return new CommentDTO(comment.getId(), comment.getPost().getId(), comment.getUser().getId(), comment.getContent());
+                                return new CommentDTO(comment.getId(), comment.getPost().getId(), comment.getUser().getId(), comment.getUser().getUsername(), comment.getContent(), comment.getCreatedAt());
                             }).collect(Collectors.toList());
 
                     return new UserDTO(

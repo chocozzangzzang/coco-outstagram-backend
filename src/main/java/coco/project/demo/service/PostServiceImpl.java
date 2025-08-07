@@ -84,8 +84,9 @@ public class PostServiceImpl implements PostService{
                     .collect(Collectors.toList());
             List<CommentDTO> commentDTOs = post.getComments().stream()
                     .map(comment -> {
+                        String username = comment.getUser().getUsername();
                         Long userId = comment.getUser().getId();
-                        return new CommentDTO(comment.getId(), post.getId(), userId, comment.getContent());
+                        return new CommentDTO(comment.getId(), post.getId(), userId, username, comment.getContent(), comment.getCreatedAt());
                     })
                     .collect(Collectors.toList());
             postDTOs.add(new PostDTO(

@@ -26,6 +26,7 @@ public class SecurityConfig {
                         //.requestMatchers("/api/user/profile").permitAll()
                         //.requestMatchers("/api/user/profileImage").permitAll()
                         .requestMatchers("/api/post/*").permitAll()
+                        .requestMatchers("/api/comment/*").permitAll()
                         .anyRequest().authenticated()
                 );
 
