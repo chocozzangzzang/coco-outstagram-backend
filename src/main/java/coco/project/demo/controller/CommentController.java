@@ -20,6 +20,18 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    @GetMapping("/delete")
+    public ResponseEntity<?> deleteComment(@RequestParam Long commentId) {
+        try {
+            commentService.deleteComment(commentId);
+            return ResponseEntity.status(HttpStatus.OK).body("댓글을 삭제했습니다");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("댓글 삭제 실패 : " + e.getMessage());
+        }
+    }
+
     @PostMapping("/add")
     public ResponseEntity<?> addComment(@Valid @RequestBody CommentDTO commentDTO) {
         try {

@@ -10,4 +10,5 @@ public interface CommentService {
 
     public Comment addComment(CommentDTO commentDTO);
     public List<Comment> getAllComments(Long PostId);
+    public void deleteComment(Long commentId);
 }
