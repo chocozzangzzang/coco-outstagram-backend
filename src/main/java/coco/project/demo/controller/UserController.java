@@ -4,8 +4,12 @@ import coco.project.demo.DTO.*;
 import coco.project.demo.JWT.JwtResponse;
 import coco.project.demo.JWT.TokenInfo;
 import coco.project.demo.models.Follow;
+import coco.project.demo.models.User;
 import coco.project.demo.service.FollowService;
 import coco.project.demo.service.UserService;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -107,10 +111,27 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDTO) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDTO,
+                                        @RequestHeader("Authorization") String idToken) {
         try {
+            // Bearer 제거
+            String token = idToken.substring(7);
+
+            // idToken 검증
+            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
+
+            // uid 추출
+            String firebaseUid = decodedToken.getUid();
+
+            // registerDTO에 저장
+            registerDTO.setFirebaseUid(firebaseUid);
+
             userService.registerUser(registerDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body("회원가입에 성공했습니다. " + registerDTO.getUsername());
+            return ResponseEntity.status(HttpStatus.CREATED).body("회원가입에 성공했습니다.");
+        } catch (FirebaseAuthException e) {
+            System.err.println("firebase "  + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
@@ -122,20 +143,22 @@ public class UserController {
     private final TokenInfo tokenInfo;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO,
+                                   @RequestHeader("Authorization") String idToken) {
         try {
-             UserDTO userDTO = userService.loginUser(loginDTO);
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(userDTO.getUsername(), loginDTO.getPassword())
-            );
-            // 인증 성공 시 SecurityContext에 Authentication 객체를 저장함 //
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            // jwt 토큰
-            String jwt = tokenInfo.generateJwtToken(userDTO.getUsername());
+            String token = idToken.substring(7);
+            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
+            String firebaseUid = decodedToken.getUid();
+            loginDTO.setFirebaseUid(firebaseUid);
+
+            User login = userService.loginUser(loginDTO);
+
+            String jwt = tokenInfo.generateJwtToken(login.getUsername());
 
             Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("jwt", new JwtResponse(jwt, auth.getName()));
-            responseBody.put("id", userDTO.getId());
+            responseBody.put("email", login.getEmail());
+            responseBody.put("jwt", new JwtResponse(jwt, login.getUsername()));
+            responseBody.put("id", login.getId());
             return ResponseEntity.ok(responseBody);
 
         } catch (IllegalArgumentException e) {

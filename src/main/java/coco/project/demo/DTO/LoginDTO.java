@@ -10,6 +10,6 @@ import lombok.Setter;
 public class LoginDTO {
 
     public String email;
-    public String password;
+    public String firebaseUid;
 
 }

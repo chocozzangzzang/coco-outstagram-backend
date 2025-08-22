@@ -35,13 +35,12 @@ public class UserDetailsImpl implements UserDetails {
     // User entity에서 UserDetailsImpl 빌드
     public static UserDetailsImpl build(User user) {
         List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
-
-        return new UserDetailsImpl(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getPassword(),
-                authorities);
+        return null;
+//        return new UserDetailsImpl(
+//                user.getId(),
+//                user.getUsername(),
+//                user.getEmail(),
+//                "");
     }
 
     @Override

@@ -32,33 +32,30 @@ public class UserServiceImpl implements UserService{
             throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
         }
 
-        String encodePassword = passwordEncoder.encode(registerDTO.getPassword());
-
         User user = User.builder()
                 .username(registerDTO.getUsername())
-                .password(encodePassword)
                 .email(registerDTO.getEmail())
+                .firebaseUid(registerDTO.getFirebaseUid())
                 .role(UserRole.USER)
                 .build();
+        System.out.println(user);
+
 
         return userRepository.save(user);
     }
 
     @Override
     @Transactional
-    public UserDTO loginUser(LoginDTO loginDTO) {
+    public User loginUser(LoginDTO loginDTO) {
 
         if(!userRepository.existsByEmail(loginDTO.getEmail())) {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
 
-        Optional<User> findUser = userRepository.findByEmail(loginDTO.getEmail());
+        User findUser = userRepository.findByEmail(loginDTO.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
-        if(!passwordEncoder.matches(loginDTO.getPassword(), findUser.get().getPassword())) {
-            throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
-        }
-
-        return User.userEntityToDTO(findUser.get());
+        return findUser;
     }
 
     @Override
@@ -86,12 +83,12 @@ public class UserServiceImpl implements UserService{
         User updatedUser = User.builder()
                 .id(findUser.getId())
                 .username(profileImageDTO.getUsername())
-                .password(findUser.getPassword())
                 .email(findUser.getEmail())
                 .profilePictureName(profileImageDTO.getFilename())
                 .profilePictureUrl(profileImageDTO.getFileurl())
                 .role(findUser.getRole())
                 .createdAt(findUser.getCreatedAt())
+                .firebaseUid(findUser.getFirebaseUid())
                 .build();
 
         return userRepository.save(updatedUser);

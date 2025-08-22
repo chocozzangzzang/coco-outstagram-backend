@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface UserService {
     public User registerUser(RegisterDTO registerDTO);
-    public UserDTO loginUser(LoginDTO loginDTO);
+    public User loginUser(LoginDTO loginDTO);
     public UserDTO getProfileWithUsername(String username);
     public User profileImageUpdate(ProfileImageDTO profileImageDTO);
     public List<UserDTO> getAllUsers();
