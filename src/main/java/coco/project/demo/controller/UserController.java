@@ -96,7 +96,6 @@ public class UserController {
 
     @PutMapping("/profileImage")
     public ResponseEntity<?> profileImageUpdater(@Valid @RequestBody ProfileImageDTO profileImageDTO) {
-        System.out.println(profileImageDTO.getUsername() + "---" + profileImageDTO.getFilename() + "--" + profileImageDTO.getFileurl());
         try {
             userService.profileImageUpdate(profileImageDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body("프로필이미지를 업데이트했습니다. " + profileImageDTO.getUsername());

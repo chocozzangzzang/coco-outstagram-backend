@@ -35,6 +35,8 @@ public class User {
     private String profilePictureUrl;
     @Column(nullable = false)
     private UserRole role;
+    @Column(nullable = false)
+    private String firebaseUid;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -76,6 +78,7 @@ public class User {
                 .likes(likeList)
                 .comments(commentList)
                 .createdAt(user.getCreatedAt())
+                .firebaseUid(user.getFirebaseUid())
                 .build();
     }
 

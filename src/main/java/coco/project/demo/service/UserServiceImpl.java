@@ -118,7 +118,8 @@ public class UserServiceImpl implements UserService{
                             user.getEmail(), user.getRole(),
                             user.getProfilePictureName(), user.getProfilePictureUrl(),
                             likesDTOs, commentDTOs,
-                            user.getCreatedAt()
+                            user.getCreatedAt(),
+                            user.getFirebaseUid()
                             );
                 }
         ).collect(Collectors.toList());

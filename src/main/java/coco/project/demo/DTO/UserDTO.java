@@ -23,5 +23,6 @@ public class UserDTO {
     public List<LikesDTO> likes;
     public List<CommentDTO> comments;
     public LocalDateTime createdAt;
+    public String firebaseUid;
 
 }
